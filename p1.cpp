@@ -41,7 +41,7 @@ void ReadData(){
         adjacencyMatrix[i] = new bool[N + 1];
     }
     int fst, scd;
-    for(int i = 1; i < M; i++){
+    for(int i = 0; i < M; i++){
         fin >> fst;
         fin >> scd;
         adjacencyMatrix[fst][scd] = true;
