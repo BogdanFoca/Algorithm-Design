@@ -8,16 +8,16 @@ ofstream fout("redundant.out");
 
 int N;
 int M;
+int M2;
 bool** adjacencyMatrix;
-bool** pathMatrix;
 
 void ReadData();
-void TransitiveReduction();
+int TransitiveReduction();
 void ComputePathMatrix();
 
 void PrintMatrix(bool** matrix, int size){
-    for (int i = 1; i < size; i++) {
-		for (int j = 1; j < size; j++) {
+    for (int i = 1; i <= size; i++) {
+		for (int j = 1; j <= size; j++) {
             cout << matrix[i][j] << " ";
 		}
         cout << "\n";
@@ -26,57 +26,64 @@ void PrintMatrix(bool** matrix, int size){
 
 int main(){
     ReadData();
-    PrintMatrix(adjacencyMatrix, N);
     ComputePathMatrix();
-    TransitiveReduction();
+    fout << TransitiveReduction();
+    fout.close();
+    free(adjacencyMatrix);
+    return 0;
 }
 
 void ReadData(){
     fin >> N;
     fin >> M;
-    adjacencyMatrix = new bool*[N];
-    for (int i = 0; i < N; i++){
-        adjacencyMatrix[i] = new bool[N];
+    adjacencyMatrix = new bool*[N + 1];
+    for (int i = 1; i <= N; i++){
+        adjacencyMatrix[i] = new bool[N + 1];
     }
     int fst, scd;
-    for(int i = 0; i < M; i++){
+    for(int i = 1; i < M; i++){
         fin >> fst;
         fin >> scd;
         adjacencyMatrix[fst][scd] = true;
     }
+    fin.close();
 }
 
 void ComputePathMatrix(){
-    /*pathMatrix = new bool*[N];
-    for (int i = 0; i < N; i++){
-        pathMatrix[i] = new bool[N];
-    }*/
-    for (int k = 1; k < M; k++) {
-		
-		for (int i = 1; i < M; i++) {
-		
-			for (int j = 1; j < M; j++) {
-
+    for (int k = 1; k <= N; k++) {
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= N; j++) {
 				adjacencyMatrix[i][j] = (adjacencyMatrix[i][j] || (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]));
 			}
 		}
 	}
 }
 
-void TransitiveReduction(){
-    for(int i = 0; i < N; i++){
-        adjacencyMatrix[i][i] = false;
+int TransitiveReduction(){
+    int number = 0;
+    for (int i = 1; i <= N; ++i){
+        if(adjacencyMatrix[i][i]){
+            adjacencyMatrix[i][i] = false;
+        }
     }
 
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < N; j++){
-            if(adjacencyMatrix[j][i]){
-                for(int k = 0; k < N; k++){
-                    if(adjacencyMatrix[i][k]){
-                        adjacencyMatrix[j][k] = false;
+    for (int j = 1; j <= N; ++j){
+        for (int i = 1; i <= N; ++i){
+            if (adjacencyMatrix[i][j]){
+                for (int k = 1; k <= N; ++k){
+                    if (adjacencyMatrix[j][k]){
+                        adjacencyMatrix[i][k] = false;
                     }
                 }
             }
         }
     }
+    for (int j = 1; j <= N; ++j){
+        for (int i = 1; i <= N; ++i){
+            if (adjacencyMatrix[i][j]){
+                number++;
+            }
+        }
+    }
+    return number;
 }
