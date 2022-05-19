@@ -33,6 +33,9 @@ void ReadData(){
     graph = new int*[N + 1];
     for (int i = 1; i <= N; i++){
         graph[i] = new int[N + 1];
+        for(int j = 1; j <= N; j++){
+            graph[i][j] = -1;
+        }
     }
     int fst, scd, w;
     for(int i = 0; i < M; i++){
@@ -40,6 +43,11 @@ void ReadData(){
         fin >> scd;
         fin >> w;
         graph[fst][scd] = w;
+        graph[scd][fst] = w;
     }
     fin.close();
+}
+
+void ComputeEdges(){
+
 }
