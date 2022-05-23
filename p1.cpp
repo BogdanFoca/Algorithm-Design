@@ -3,8 +3,8 @@
 
 using namespace std;
 
-ifstream fin("redundant.in");
-ofstream fout("redundant.out");
+ifstream fin("p1.in");
+ofstream fout("p1.out");
 
 int N;
 int M;

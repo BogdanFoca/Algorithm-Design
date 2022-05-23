@@ -40,3 +40,5 @@ private_tests/p1/out/test9.out
 private_tests/p3/out/test6.out
 private_tests/p3/out/test5.out
 *.out
+*.out
+*.errors

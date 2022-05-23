@@ -3,8 +3,8 @@
 
 using namespace std;
 
-ifstream fin("cicluri.in");
-ofstream fout("cicluri.out");
+ifstream fin("p2.in");
+ofstream fout("p2.out");
 
 int N;
 int M;
