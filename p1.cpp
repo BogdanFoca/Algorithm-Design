@@ -145,16 +145,21 @@ int ComputeMinimumEdges(){
         if(components[i].empty()){
             break;
         }
+
+        if(components[i].size() == 1){
+            edgesCount += 1;
+            continue;
+        }
         
         //find if component is cyclic
         bool isCyclic = false;
-        visitedCycle = vector<bool>(N, false);
-        onstack = vector<bool>(N, false);
+        visitedCycle.assign(N + 1, false);
+        onstack.assign(N + 1, false);
         for (int node = 0; node < components[i].size(); node++)
         {
             if (!visitedCycle[components[i][node]])
             {
-                vector<int> newAdj[N];
+                vector<int> newAdj[N + 1];
                 for (int k = 0; k < components[i].size(); k++){
                     newAdj[components[i][k]] = adj[components[i][k]];
                 }
@@ -169,9 +174,11 @@ int ComputeMinimumEdges(){
         //add edges based on result
         if(isCyclic){
             edgesCount += components[i].size();
+            cout << edgesCount << "\n";
         }
         else{
             edgesCount += components[i].size() - 1;
+            cout << edgesCount << "\n";
         }
     }
 
