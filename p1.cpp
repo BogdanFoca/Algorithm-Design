@@ -13,29 +13,27 @@ int N;
 int M;
 int M2;
 
-list<int> *adj; // An array of adjacency lists
-vector<vector<int>> connexParts;
+vector<int> *adj; // An array of adjacency lists
+vector<int> *rev_adj; // An array of adjacency lists
+bool *visited;
+int numComponents = 0;
+stack<int> S;
+
+vector<int> *components;
 
 void ReadData();
-void GetConnected();
-void fillOrder(int v, bool visited[], stack<int> &Stack);
 void addEdge(int v, int w);
-list<int>* getTranspose();
-void DFSUtil(int v, bool visited[], int connexIndex);
-
-void PrintMatrix(bool **matrix, int size)
-{
-    for (int i = 1; i <= size; i++) {
-		for (int j = 1; j <= size; j++) {
-            cout << matrix[i][j] << " ";
-		}
-        cout << "\n";
-	}
-}
+void addEdgeRev(int v, int w);
+void kosaraju_dfs_1(int x);
+void kosaraju_dfs_2(int x);
+void Kosaraju();
+bool hasCycle(int node, int adj[]);
+int ComputeMinimumEdges();
 
 int main(){
     ReadData();
-    GetConnected();
+    Kosaraju();
+    fout << ComputeMinimumEdges();
     fout.close();
     return 0;
 }
@@ -43,100 +41,139 @@ int main(){
 void ReadData(){
     fin >> N;
     fin >> M;
+    adj = new vector<int>[N+1];
+    rev_adj = new vector<int>[N+1];
+    visited = new bool[N+1];
+    components = new vector<int>[N+1];
     int fst, scd;
     for(int i = 0; i < M; i++){
         fin >> fst;
         fin >> scd;
         addEdge(fst, scd);
+        addEdgeRev(scd, fst);
     }
     fin.close();
-}
-
-void GetConnected(){
-    stack<int> Stack;
-
-    // Mark all the vertices as not visited (For first DFS)
-    bool *visited = new bool[N];
-    for (int i = 0; i < N; i++){
-        visited[i] = false;
-    }
-
-    // Fill vertices in stack according to their finishing times
-    for (int i = 0; i < N; i++){
-        if (visited[i] == false){
-            fillOrder(i, visited, Stack);
-        }
-    }
-
-    // Create a reversed graph
-    list<int> *gr = getTranspose();
-
-    // Mark all the vertices as not visited (For second DFS)
-    for (int i = 0; i < N; i++){
-        visited[i] = false;
-    }
-
-    int i = 0;
-    // Now process all vertices in order defined by Stack
-    while (Stack.empty() == false)
-    {
-        // Pop a vertex from stack
-        int v = Stack.top();
-        Stack.pop();
-
-        // Print Strongly connected component of the popped vertex
-        if (visited[v] == false)
-        {
-            connexParts.push_back(vector<int>());
-            DFSUtil(v, visited, i);
-            i++;
-        }
-    }
-}
-
-void fillOrder(int v, bool visited[], stack<int> &Stack){
-    visited[v] = true;
-
-    // Recur for all the vertices adjacent to this vertex
-    list<int>::iterator i;
-    for (i = adj[v].begin(); i != adj[v].end(); ++i){
-        if (!visited[*i]){
-            fillOrder(*i, visited, Stack);
-        }
-    }
-
-    // All vertices reachable from v are processed by now, push v
-    Stack.push(v);
 }
 
 void addEdge(int v, int w){
     adj[v].push_back(w);
 }
 
-list<int> *getTranspose(){
-    list<int> *g = new list<int>[N];
-    for (int v = 0; v < N; v++)
-    {
-        // Recur for all the vertices adjacent to this vertex
-        list<int>::iterator i;
-        for (i = adj[v].begin(); i != adj[v].end(); ++i)
-        {
-            g[*i].push_back(v);
-        }
-    }
-    return g;
+void addEdgeRev(int v, int w)
+{
+    rev_adj[v].push_back(w);
 }
 
-void DFSUtil(int v, bool visited[], int connexIndex){
-    // Mark the current node as visited and print it
-    visited[v] = true;
-    connexParts[connexIndex].push_back(v);
+/* #region Kosaraju */
+void kosaraju_dfs_1(int x)
+{
+    visited[x] = true;
+    for (int i = 0; i < adj[x].size(); i++)
+    {
+        if (!visited[adj[x][i]])
+            kosaraju_dfs_1(adj[x][i]);
+    }
+    S.push(x);
+}
 
-    // Recur for all the vertices adjacent to this vertex
-    list<int>::iterator i;
-    for (i = adj[v].begin(); i != adj[v].end(); ++i){
-        if (!visited[*i]){
-            DFSUtil(*i, visited, connexIndex);
+void kosaraju_dfs_2(int x)
+{
+    components[numComponents].push_back(x);
+    visited[x] = true;
+    for (int i = 0; i < rev_adj[x].size(); i++)
+    {
+        if (!visited[rev_adj[x][i]])
+            kosaraju_dfs_2(rev_adj[x][i]);
+    }
+}
+
+void Kosaraju()
+{
+    for (int i = 1; i <= N; i++)
+    {
+        if (!visited[i])
+            kosaraju_dfs_1(i);
+    }
+
+    for (int i = 1; i <= N; i++)
+    {
+        visited[i] = false;
+    }
+
+    while (!S.empty())
+    {
+        int v = S.top();
+        S.pop();
+        if (!visited[v])
+        {
+            kosaraju_dfs_2(v);
+            numComponents++;
         }
     }
+}
+/* #endregion */
+
+vector<bool> visitedCycle;
+vector<bool> onstack;
+
+bool hasCycle(int node, vector<int> adj[])
+{
+    visitedCycle[node] = true;
+    onstack[node] = true;
+
+    for (int neighbour = 0; neighbour < adj[node].size(); neighbour++)
+    {
+        if (visitedCycle[adj[node][neighbour]] && onstack[adj[node][neighbour]])
+        {
+            // There is a circle
+            return true;
+        }
+        else if (!visitedCycle[adj[node][neighbour]] && hasCycle(adj[node][neighbour], adj))
+        {
+            // There is a circle
+            return true;
+        }
+    }
+    onstack[node] = false;
+    return false;
+}
+
+int ComputeMinimumEdges(){
+    int edgesCount = 0;
+    for (int i = 0; i < N; i++){
+        // reached end if component is empty
+        if(components[i].empty()){
+            break;
+        }
+        
+        //find if component is cyclic
+        bool isCyclic = false;
+        visitedCycle = vector<bool>(N, false);
+        onstack = vector<bool>(N, false);
+        for (int node = 0; node < components[i].size(); node++)
+        {
+            if (!visitedCycle[components[i][node]])
+            {
+                vector<int> newAdj[N];
+                for (int k = 0; k < components[i].size(); k++){
+                    newAdj[components[i][k]] = adj[components[i][k]];
+                }
+
+                isCyclic = isCyclic || hasCycle(components[i][node], newAdj);
+                if (isCyclic){
+                    break;
+                }
+            }
+        }
+
+        //add edges based on result
+        if(isCyclic){
+            edgesCount += components[i].size();
+        }
+        else{
+            edgesCount += components[i].size() - 1;
+        }
+    }
+
+    return edgesCount;
 }
