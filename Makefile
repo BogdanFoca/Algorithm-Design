@@ -8,3 +8,5 @@ run-p2:
 	./p2
 run-p1:
 	./p1
+clean:
+	rm -f p1 p2 p3

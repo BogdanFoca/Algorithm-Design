@@ -16,23 +16,23 @@ vector<int> *adj; // An array of adjacency lists
 vector<int> *undirectedAdj;
 vector<int> *components;
 
-void ReadData();
+void readData();
 void addEdge(int v, int w);
 void addEdgeUndirected(int v, int w);
 bool hasCycle(int node, int adj[]);
-int ComputeMinimumEdges();
+int computeMinimumEdges();
 void connectedComponents();
 
 int main()
 {
-    ReadData();
+    readData();
     connectedComponents();
-    fout << ComputeMinimumEdges();
+    fout << computeMinimumEdges();
     fout.close();
     return 0;
 }
 
-void ReadData()
+void readData()
 {
     fin >> N;
     fin >> M;
@@ -68,7 +68,7 @@ void DFSConnected(int v, bool visited[], int index)
     visited[v] = true;
     components[index].push_back(v);
 
-    // Recur for all the vertices adjacent to this vertex
+    // Repeat for all the vertices adjacent to this vertex
     for (int i = 0; i < undirectedAdj[v].size(); ++i)
     {
         if (!visited[undirectedAdj[v][i]])
@@ -125,7 +125,7 @@ bool hasCycle(int node, vector<int> adj[])
     return false;
 }
 
-int ComputeMinimumEdges(){
+int computeMinimumEdges(){
     int edgesCount = 0;
     for (int i = 0; i < N; i++)
     {
