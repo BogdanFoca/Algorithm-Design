@@ -12,7 +12,7 @@ ofstream fout("p1.out");
 int N;
 int M;
 
-vector<int> *adj; // An array of adjacency lists
+vector<int> *adj;   // An array of adjacency lists
 vector<int> *undirectedAdj;
 vector<int> *components;
 
@@ -25,8 +25,7 @@ void connectedComponents();
 
 int i;
 
-int main()
-{
+int main() {
     readData();
     connectedComponents();
     fout << computeMinimumEdges();
@@ -34,16 +33,14 @@ int main()
     return 0;
 }
 
-void readData()
-{
+void readData() {
     fin >> N;
     fin >> M;
     adj = new vector<int>[N+1];
     undirectedAdj = new vector<int>[N + 1];
     components = new vector<int>[N+1];
     int fst, scd;
-    for(i = 0; i < M; i++)
-    {
+    for (i = 0; i < M; i++) {
         fin >> fst;
         fin >> scd;
         addEdge(fst, scd);
@@ -52,51 +49,43 @@ void readData()
     fin.close();
 }
 
-void addEdge(int v, int w)
-{
+void addEdge(int v, int w) {
     adj[v].push_back(w);
 }
 
-void addEdgeUndirected(int v, int w)
-{
+void addEdgeUndirected(int v, int w) {
     undirectedAdj[v].push_back(w);
     undirectedAdj[w].push_back(v);
 }
 
 /* #region Weakly Connected Parts */
-void DFSConnected(int v, bool visited[], int index)
-{
+void DFSConnected(int v, bool visited[], int index) {
     // Mark the current node as visited and add it to component
     visited[v] = true;
     components[index].push_back(v);
 
     // Repeat for all the vertices adjacent to this vertex
-    for (int i = 0; i < undirectedAdj[v].size(); ++i)
-    {
-        if (!visited[undirectedAdj[v][i]])
-        {
+    for (int i = 0; i < undirectedAdj[v].size(); ++i) {
+        if (!visited[undirectedAdj[v][i]]) {
             DFSConnected(undirectedAdj[v][i], visited, index);
         }
     }
 }
 
-void connectedComponents()
-{
+void connectedComponents() {
     // Mark all the vertices as not visited
     bool *visited = new bool[N];
     int v;
-    for (v = 1; v <= N; v++)
-    {
+    for (v = 1; v <= N; v++) {
         visited[v] = false;
     }
 
     int i = 0;
-    for (v = 1; v <= N; v++)
-    {
-        if (!visited[v])
-        {
+    for (v = 1; v <= N; v++) {
+        if (!visited[v]) {
             DFSConnected(v, visited, i);
-            i++;    //increment component index
+            // increment component index
+            i++;
         }
     }
     delete[] visited;
@@ -106,21 +95,18 @@ void connectedComponents()
 vector<bool> visitedCycle;
 vector<bool> onstack;
 
-bool hasCycle(int node, vector<int> adj[])
-{
+bool hasCycle(int node, vector<int> adj[]) {
     visitedCycle[node] = true;
     onstack[node] = true;
 
     int neighbour;
-    for (neighbour = 0; neighbour < adj[node].size(); neighbour++)
-    {
-        if (visitedCycle[adj[node][neighbour]] && onstack[adj[node][neighbour]])
-        {
+    for (neighbour = 0; neighbour < adj[node].size(); neighbour++) {
+        if (visitedCycle[adj[node][neighbour]] &&
+            onstack[adj[node][neighbour]]) {
             // There is a cycle
             return true;
-        }
-        else if (!visitedCycle[adj[node][neighbour]] && hasCycle(adj[node][neighbour], adj))
-        {
+        } else if (!visitedCycle[adj[node][neighbour]] &&
+            hasCycle(adj[node][neighbour], adj)) {
             // There is a cycle
             return true;
         }
@@ -129,48 +115,38 @@ bool hasCycle(int node, vector<int> adj[])
     return false;
 }
 
-int computeMinimumEdges(){
+int computeMinimumEdges() {
     int edgesCount = 0;
-    for (i = 0; i < N; i++)
-    {
+    for (i = 0; i < N; i++) {
         // reached end if component is empty
-        if(components[i].empty())
-        {
+        if (components[i].empty()) {
             break;
         }
-        
-        //find if component is cyclic
+        // find if component is cyclic
         bool isCyclic = false;
         visitedCycle.assign(N + 1, false);
         onstack.assign(N + 1, false);
         int node;
-        for (node = 0; node < components[i].size(); node++)
-        {
-            if (!visitedCycle[components[i][node]])
-            {
+        for (node = 0; node < components[i].size(); node++) {
+            if (!visitedCycle[components[i][node]]) {
                 vector<int> newAdj[N + 1];
                 int k;
-                for (k = 0; k < components[i].size(); k++)
-                {
+                for (k = 0; k < components[i].size(); k++) {
                     newAdj[components[i][k]] = adj[components[i][k]];
                 }
 
                 isCyclic = isCyclic || hasCycle(components[i][node], newAdj);
 
-                if (isCyclic)
-                {
+                if (isCyclic) {
                     break;
                 }
             }
         }
 
-        //add edges based on result
-        if(isCyclic)
-        {
+        // add edges based on result
+        if (isCyclic) {
             edgesCount += components[i].size();
-        }
-        else
-        {
+        } else {
             edgesCount += components[i].size() - 1;
         }
     }

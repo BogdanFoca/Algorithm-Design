@@ -9,11 +9,9 @@ using namespace std;
 ifstream fin("p2.in");
 ofstream fout("p2.out");
 
-struct Edge
-{
+struct Edge {
     int x, y, w, idx;
-    bool operator<(Edge e) const
-    {
+    bool operator<(Edge e) const {
         return w < e.w;
     }
 };
@@ -28,19 +26,17 @@ int M;
 
 void ReadData();
 
-int find(int x)
-{
-    if (father[x] == x)
+int find(int x) {
+    if (father[x] == x) {
         return x;
+    }
     return find(father[x]);
 }
 
-void merge(Edge e)
-{
+void merge(Edge e) {
     int x = find(e.x);
     int y = find(e.y);
-    if (x != y)
-    {
+    if (x != y) {
         if (sizes[x] > sizes[y])
             swap(x, y);
         father[x] = y;
@@ -48,17 +44,16 @@ void merge(Edge e)
     }
 }
 
-int main(){
+int main() {
     ReadData();
     int i;
-    for(i = 0; i < N; i++)
-    {
+    for (i = 0; i < N; i++) {
         father[i] = i;
         sizes[i] = 1;
     }
 }
 
-void ReadData(){
+void ReadData() {
     fin >> N;
     fin >> M;
     father = new int[N];
@@ -70,7 +65,7 @@ void ReadData(){
     adj = new vector<pair<int, int>>[N];
     edges = new Edge[N];
     int fst, scd, w, i;
-    for(i = 0; i < M; i++){
+    for (i = 0; i < M; i++) {
         fin >> fst;
         fin >> scd;
         fin >> w;
