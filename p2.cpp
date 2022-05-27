@@ -1,53 +1,82 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
 ifstream fin("p2.in");
 ofstream fout("p2.out");
 
+struct Edge
+{
+    int x, y, w, idx;
+    bool operator<(Edge e) const
+    {
+        return w < e.w;
+    }
+};
+
+int *father, *dis, *backEdge, *ans, *sizes;
+bool *mark;
+vector<pair<int, int>> *adj;
+Edge *edges;
+
 int N;
 int M;
-int** graph;
 
 void ReadData();
 
-void PrintMatrix(int** matrix, int size){
-    for (int i = 1; i <= size; i++) {
-		for (int j = 1; j <= size; j++) {
-            cout << matrix[i][j] << " ";
-		}
-        cout << "\n";
-	}
+int find(int x)
+{
+    if (father[x] == x)
+        return x;
+    return find(father[x]);
+}
+
+void merge(Edge e)
+{
+    int x = find(e.x);
+    int y = find(e.y);
+    if (x != y)
+    {
+        if (sizes[x] > sizes[y])
+            swap(x, y);
+        father[x] = y;
+        sizes[y] += sizes[x];
+    }
 }
 
 int main(){
     ReadData();
-    free(graph);
-    fout.close();
+    int i;
+    for(i = 0; i < N; i++)
+    {
+        father[i] = i;
+        sizes[i] = 1;
+    }
 }
 
 void ReadData(){
     fin >> N;
     fin >> M;
-    graph = new int*[N + 1];
-    for (int i = 1; i <= N; i++){
-        graph[i] = new int[N + 1];
-        for(int j = 1; j <= N; j++){
-            graph[i][j] = -1;
-        }
-    }
-    int fst, scd, w;
-    for(int i = 0; i < M; i++){
+    father = new int[N];
+    dis = new int[N];
+    backEdge = new int[N];
+    ans = new int[N];
+    sizes = new int[N];
+    mark = new bool[N];
+    adj = new vector<pair<int, int>>[N];
+    edges = new Edge[N];
+    int fst, scd, w, i;
+    for(i = 0; i < M; i++){
         fin >> fst;
         fin >> scd;
         fin >> w;
-        graph[fst][scd] = w;
-        graph[scd][fst] = w;
+        edges[i].x = fst;
+        edges[i].y = scd;
+        edges[i].w = w;
     }
     fin.close();
-}
-
-void ComputeEdges(){
-
 }

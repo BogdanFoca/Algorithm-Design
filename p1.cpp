@@ -23,6 +23,8 @@ bool hasCycle(int node, int adj[]);
 int computeMinimumEdges();
 void connectedComponents();
 
+int i;
+
 int main()
 {
     readData();
@@ -40,7 +42,7 @@ void readData()
     undirectedAdj = new vector<int>[N + 1];
     components = new vector<int>[N+1];
     int fst, scd;
-    for(int i = 0; i < M; i++)
+    for(i = 0; i < M; i++)
     {
         fin >> fst;
         fin >> scd;
@@ -82,13 +84,14 @@ void connectedComponents()
 {
     // Mark all the vertices as not visited
     bool *visited = new bool[N];
-    for (int v = 1; v <= N; v++)
+    int v;
+    for (v = 1; v <= N; v++)
     {
         visited[v] = false;
     }
 
     int i = 0;
-    for (int v = 1; v <= N; v++)
+    for (v = 1; v <= N; v++)
     {
         if (!visited[v])
         {
@@ -108,7 +111,8 @@ bool hasCycle(int node, vector<int> adj[])
     visitedCycle[node] = true;
     onstack[node] = true;
 
-    for (int neighbour = 0; neighbour < adj[node].size(); neighbour++)
+    int neighbour;
+    for (neighbour = 0; neighbour < adj[node].size(); neighbour++)
     {
         if (visitedCycle[adj[node][neighbour]] && onstack[adj[node][neighbour]])
         {
@@ -127,7 +131,7 @@ bool hasCycle(int node, vector<int> adj[])
 
 int computeMinimumEdges(){
     int edgesCount = 0;
-    for (int i = 0; i < N; i++)
+    for (i = 0; i < N; i++)
     {
         // reached end if component is empty
         if(components[i].empty())
@@ -139,12 +143,14 @@ int computeMinimumEdges(){
         bool isCyclic = false;
         visitedCycle.assign(N + 1, false);
         onstack.assign(N + 1, false);
-        for (int node = 0; node < components[i].size(); node++)
+        int node;
+        for (node = 0; node < components[i].size(); node++)
         {
             if (!visitedCycle[components[i][node]])
             {
                 vector<int> newAdj[N + 1];
-                for (int k = 0; k < components[i].size(); k++)
+                int k;
+                for (k = 0; k < components[i].size(); k++)
                 {
                     newAdj[components[i][k]] = adj[components[i][k]];
                 }
